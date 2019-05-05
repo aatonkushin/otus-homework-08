@@ -9,5 +9,5 @@ public interface Service<T> {
 
     List<T> getAll();
 
-    void deleteById(String id);
+    void deleteById(String id) throws Exception;
 }

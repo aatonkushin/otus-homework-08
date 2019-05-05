@@ -3,6 +3,7 @@ package org.tonkushin.hw08.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
+import org.tonkushin.hw08.exception.AuthorHasBooksException;
 import org.tonkushin.hw08.model.Author;
 import org.tonkushin.hw08.service.AuthorService;
 
@@ -41,7 +42,14 @@ public class AuthorShellController {
 
     @ShellMethod(value = "Удаляет автора с указанным кодом.", key={"delete-author", "da"})
     public String deleteAuthor(String id){
-        authorService.deleteById(id);
+        try{
+            authorService.deleteById(id);
+        } catch (AuthorHasBooksException e){
+            return "Невозможно удалить автора, т.к. у него есть книги";
+        } catch (Exception e){
+            return "Ошибка при удалении автора";
+        }
+
         return "Автор удалён";
     }
 }

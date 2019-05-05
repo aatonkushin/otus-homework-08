@@ -2,6 +2,7 @@ package org.tonkushin.hw08.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.tonkushin.hw08.exception.BookNotFoundException;
 import org.tonkushin.hw08.model.Author;
 import org.tonkushin.hw08.model.Book;
 import org.tonkushin.hw08.model.Genre;
@@ -33,10 +34,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Book getById(String id) throws Exception {
-        Optional<Book> opt = repository.findById(id);
-        if (opt.isPresent())
-            return opt.get();
-        else throw new Exception("Книга не найдена!");
+        return repository.findById(id).orElseThrow(BookNotFoundException::new);
     }
 
     @Override

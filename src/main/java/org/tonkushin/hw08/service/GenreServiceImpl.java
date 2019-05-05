@@ -1,18 +1,24 @@
 package org.tonkushin.hw08.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.tonkushin.hw08.exception.GenreHasBooksException;
+import org.tonkushin.hw08.exception.GenreNotFoundException;
 import org.tonkushin.hw08.model.Genre;
+import org.tonkushin.hw08.repository.BookRepository;
 import org.tonkushin.hw08.repository.GenreRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class GenreServiceImpl implements GenreService {
     private final GenreRepository repository;
+    private final BookRepository bookRepository;
 
-    public GenreServiceImpl(GenreRepository repository) {
+    @Autowired
+    public GenreServiceImpl(GenreRepository repository, BookRepository bookRepository) {
         this.repository = repository;
+        this.bookRepository = bookRepository;
     }
 
     @Override
@@ -22,14 +28,7 @@ public class GenreServiceImpl implements GenreService {
 
     @Override
     public Genre getById(String id) throws Exception {
-        Optional<Genre> opt = repository.findById(id);
-
-        if (opt.isPresent()){
-            return opt.get();
-        } else {
-            throw new Exception("Жанр не найден!");
-        }
-
+        return repository.findById(id).orElseThrow(GenreNotFoundException::new);
     }
 
     @Override
@@ -38,7 +37,10 @@ public class GenreServiceImpl implements GenreService {
     }
 
     @Override
-    public void deleteById(String id) {
-        repository.deleteById(id);
+    public void deleteById(String id) throws GenreHasBooksException {
+        if (bookRepository.countAllByGenre_Id(id) == 0)
+            repository.deleteById(id);
+        else
+            throw new GenreHasBooksException();
     }
 }

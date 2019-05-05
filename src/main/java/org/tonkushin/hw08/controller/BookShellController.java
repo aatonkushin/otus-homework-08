@@ -79,7 +79,12 @@ public class BookShellController {
 
     @ShellMethod(value = "Удаляет книгу с указанным кодом.", key = {"delete-book", "db"})
     public String deleteBook(String id) {
-        service.deleteById(id);
+        try{
+            service.deleteById(id);
+        } catch (Exception e) {
+            return "Ошибка при удалении книги";
+        }
+
         return "Книга удалена";
     }
 }

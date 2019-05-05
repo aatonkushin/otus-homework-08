@@ -1,18 +1,24 @@
 package org.tonkushin.hw08.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.tonkushin.hw08.exception.AuthorHasBooksException;
+import org.tonkushin.hw08.exception.AuthorNotFoundException;
 import org.tonkushin.hw08.model.Author;
 import org.tonkushin.hw08.repository.AuthorRepository;
+import org.tonkushin.hw08.repository.BookRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class AuthorServiceImpl implements AuthorService {
     private final AuthorRepository repository;
+    private final BookRepository bookRepository;
 
-    public AuthorServiceImpl(AuthorRepository repository) {
+    @Autowired
+    public AuthorServiceImpl(AuthorRepository repository, BookRepository bookRepository) {
         this.repository = repository;
+        this.bookRepository = bookRepository;
     }
 
     @Override
@@ -22,11 +28,7 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public Author getById(String id) throws Exception {
-        Optional<Author> opt = repository.findById(id);
-        if (opt.isPresent())
-            return opt.get();
-        else
-            throw new Exception("Автор не найден!");
+        return repository.findById(id).orElseThrow(AuthorNotFoundException::new);
     }
 
     @Override
@@ -35,7 +37,10 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
-    public void deleteById(String id) {
-        repository.deleteById(id);
+    public void deleteById(String id) throws AuthorHasBooksException {
+        if (bookRepository.countAllByAuthor_Id(id) == 0)
+            repository.deleteById(id);
+        else
+            throw new AuthorHasBooksException();
     }
 }

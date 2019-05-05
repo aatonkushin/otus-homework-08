@@ -7,13 +7,12 @@ import org.mockito.Mockito;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.tonkushin.hw08.model.Author;
 import org.tonkushin.hw08.repository.AuthorRepository;
+import org.tonkushin.hw08.repository.BookRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
-import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 public class AuthorServiceImplTest {
@@ -25,7 +24,9 @@ public class AuthorServiceImplTest {
         AuthorRepository repository = Mockito.mock(AuthorRepository.class);
         Mockito.when(repository.insert(author)).thenReturn(author);
 
-        AuthorService service = new AuthorServiceImpl(repository);
+        BookRepository bookRepository = Mockito.mock(BookRepository.class);
+
+        AuthorService service = new AuthorServiceImpl(repository, bookRepository);
         Assertions.assertThat(service.insert(author)).isEqualTo(author);
     }
 
@@ -38,7 +39,9 @@ public class AuthorServiceImplTest {
         String uuid = UUID.randomUUID().toString();
         Mockito.when(repository.findById(uuid)).thenReturn(opt);
 
-        AuthorService service = new AuthorServiceImpl(repository);
+        BookRepository bookRepository = Mockito.mock(BookRepository.class);
+
+        AuthorService service = new AuthorServiceImpl(repository, bookRepository);
         Assertions.assertThat(service.getById(uuid)).isEqualTo(author);
     }
 
@@ -52,7 +55,9 @@ public class AuthorServiceImplTest {
         AuthorRepository repository = Mockito.mock(AuthorRepository.class);
         Mockito.when(repository.findAllByOrderByName()).thenReturn(authors);
 
-        AuthorService service = new AuthorServiceImpl(repository);
+        BookRepository bookRepository = Mockito.mock(BookRepository.class);
+
+        AuthorService service = new AuthorServiceImpl(repository, bookRepository);
 
         Assertions.assertThat(service.getAll().size()).isEqualTo(3);
     }

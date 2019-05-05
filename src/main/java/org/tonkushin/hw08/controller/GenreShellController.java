@@ -3,6 +3,7 @@ package org.tonkushin.hw08.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
+import org.tonkushin.hw08.exception.GenreHasBooksException;
 import org.tonkushin.hw08.model.Genre;
 import org.tonkushin.hw08.service.GenreService;
 
@@ -39,7 +40,14 @@ public class GenreShellController {
 
     @ShellMethod(value = "Удаляет жанр с указанным кодом.", key = {"delete-genre", "dg"})
     public String deleteGenre(String id) {
-        service.deleteById(id);
+        try{
+            service.deleteById(id);
+        } catch (GenreHasBooksException e){
+            return "Невозможно удалить жанр, т.к. у него есть книги";
+        } catch (Exception e){
+            return "Ошибка при удалении жанра";
+        }
+
         return "Жанр удалён";
     }
 }
